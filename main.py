@@ -9,9 +9,15 @@ def parse_file(input_file):
         print(i)
         n, t, m = [int(x) for x in lines[i].split()]
         book_ids = [int(x) for x in lines[i + 1].split()]
-        libraries += [((n, t,m), book_ids)]
+        libraries += [((n, t, m), book_ids, sum(book_ids))]
 
     return ((b, l, d), book_scores, libraries) 
+
+def weight(library, days_left):
+    (n, t, m), book_ids, book_sum = library
+
+    weight = (book_sum / m) / (days_left - t)
+    return weight
 
 if __name__=='__main__':
     input_file = open('a_example.txt', 'r')
