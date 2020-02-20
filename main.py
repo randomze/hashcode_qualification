@@ -1,3 +1,4 @@
+import math
 import sys
 
 def parse_file(input_file):
@@ -11,7 +12,7 @@ def parse_file(input_file):
         n, t, m = [int(x) for x in lines[i].split()]
         book_ids = set([int(x) for x in lines[i + 1].split()])
         library = [(n, t, m, (i - 2) // 2), book_ids, sum(book_ids)]
-        average = weight(library, d)**(1/2) / n
+        average = weight(library, d) * (library[2] * m / n)
         to_be_removed = set()
         for j in book_ids:
             if book_scores[j][2] == -1:
@@ -35,7 +36,7 @@ def weight(library, days):
 
     weight = -1
     if days - t != 0:
-        weight = (book_sum * m) ** 2 / (days - t)
+        weight = (book_sum ) / (m * (days - t))
     return weight
 
 if __name__=='__main__':
@@ -45,10 +46,11 @@ if __name__=='__main__':
         output_file = open(files + '.out' , 'w+')
         (b, l, d), book_scores, libraries = parse_file(input_file)
         time_remaining = d
-        libraries = sorted(libraries, key=lambda library: weight(library, time_remaining), reverse=True)
+        libraries = sorted(libraries, key=lambda library: weight(library, time_remaining), reverse=False)
         number_of_libraries = 0 
         libraries_output = []
         time_elapsed = 0
+
         for i in range(len(libraries)):
             library = libraries[i]
             (n, t, m, id_number), book_ids, book_sum = library
@@ -70,6 +72,10 @@ if __name__=='__main__':
                     libraries_output += [(id_number, to_be_sent)]
                 else:
                     number_of_libraries -= 1
+
+                if time_elapsed / d > 0.025:
+                    time_elapsed = 0
+                    libraries[i:] = sorted(libraries[i:], key=lambda library: weight(library, time_remaining), reverse=False)
 
             
         if number_of_libraries > 0:
